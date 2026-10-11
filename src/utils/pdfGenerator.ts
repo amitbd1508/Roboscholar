@@ -3,9 +3,24 @@ import { PAPER_METADATA, PAPER_BIBLIOGRAPHY } from '../data/researchPaperData';
 import { FULL_PAPER_SECTIONS } from '../data/fullPaperText';
 
 /**
- * Generates an IEEE Transactions on Robotics formatted publication PDF
+ * Generates and downloads an IEEE Transactions on Robotics formatted publication PDF
  */
 export function generatePaperPdf(): void {
+  // First attempt direct download of the pre-built static PDF from public/
+  try {
+    const staticUrl = '/Autonomous_Sensorimotor_Synthesis_Paper.pdf';
+    const link = document.createElement('a');
+    link.href = staticUrl;
+    link.download = 'Autonomous_Sensorimotor_Synthesis_Paper.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return;
+  } catch (e) {
+    console.warn("Direct download failed, falling back to dynamic jsPDF compilation", e);
+  }
+
+  // Fallback: Dynamic jsPDF client compilation
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'pt',

@@ -1,0 +1,2188 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 612. 792.]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 8184
+>>
+stream
+0.200025 w
+0 G
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.314 g
+40. 752. Td
+(IEEE TRANSACTIONS ON ROBOTICS, VOL. 42, NO. 4, OCTOBER 2026) Tj
+ET
+BT
+/F10 16 Tf
+18.3999999999999986 TL
+0.059 0.09 0.165 rg
+40. 734. Td
+(Autonomous Sensorimotor Synthesis: Foundations, Architectures, and Safety) Tj
+T* (Verification for Full LLM Control of Physical Robots) Tj
+ET
+BT
+/F9 10 Tf
+11.5 TL
+0.196 g
+40. 686. Td
+(Dr. Elena Vance-Kowalski \(Robotics and Embodied Intelligence Laboratory, MIT CSAIL\); Prof. Marcus Thorne \(Embodied AI) Tj
+T* (Research Group, Stanford University\); Dr. Sarah Lin-Alvarez \(Google DeepMind, Robotics Foundations Unit\); Devon Zhang) Tj
+T* (\(Berkeley Artificial Intelligence Research \(BAIR\), UC Berkeley\)) Tj
+ET
+BT
+/F5 8 Tf
+9.1999999999999993 TL
+0.275 g
+40. 641. Td
+(DOI: 10.1109/TRO.2026.10984521  |  arXiv:2603.14920 [cs.RO]  |  Date: October 2026) Tj
+ET
+0.78 G
+40. 627. m
+572. 627. l
+S
+0.96 0.97 0.98 rg
+40. 613. 532. -110. re
+f
+0.86 0.89 0.92 RG
+40. 613. 532. -110. re
+S
+BT
+/F10 10 Tf
+11.5 TL
+0.059 0.09 0.165 rg
+50. 597. Td
+(Abstract—) Tj
+ET
+BT
+/F9 8.5 Tf
+9.7749999999999986 TL
+0.157 g
+50. 585. Td
+(Recent breakthroughs in multimodal foundation models have precipitated a paradigm shift in robotics: transitioning from modular, hand-engineered) Tj
+T* (perception-planning-control hierarchies toward direct end-to-end Large Language Model \(LLM\) and Vision-Language-Action \(VLA\) sensorimotor) Tj
+T* (synthesis. In this paradigm, raw high-dimensional sensory streams \(RGB-D video, proprioceptive joint states, tactile signals\) and natural language) Tj
+T* (goals are mapped directly onto high-frequency continuous robotic actions \(SE\(3\) end-effector delta trajectories, joint torques, and gripper actuations\)) Tj
+T* (through tokenized latent spaces.  This paper delivers a foundational treatment of full LLM robot control. First, we formalize the mathematical) Tj
+T* (framework governing continuous-discrete sensorimotor translation, analyzing the theoretical properties of discrete action tokenization \(256-bin) Tj
+T* (VQ-tokenizers\) versus continuous flow matching heads. Second, we formulate five core research questions \(RQs\) delineating the foundational) Tj
+ET
+BT
+/F10 8.5 Tf
+9.7749999999999986 TL
+0.157 g
+50. 513. Td
+(Index Terms—) Tj
+ET
+BT
+/F9 8.5 Tf
+9.7749999999999986 TL
+0.157 g
+110. 513. Td
+(Large Language Models \(LLMs\), Vision-Language-Action \(VLA\) Models, Embodied Artificial Intelligence, End-to-End Sensorimotor Synthesis, Discrete Action Tokenization, Control Barrier Functions \(CBFs\), Action Chunking with Transformers \(ACT\), Flow Matching & Diffusion Policies, Human-Robot Interaction \(HRI\)) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 488. Td
+(1. INTRODUCTION & PARADIGM SHIFT: FROM MODULAR STACKS TO LATENT) Tj
+T* (SENSORIMOTOR SYNTHESIS) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 454. Td
+(For over five decades, robotic autonomy has relied on modular pipelines dividing intelligence into perception, mapping, symbolic planning,) Tj
+T* (trajectory generation, and motor control. The emergence of multimodal foundation models introduces a radical alternative: direct end-to-end) Tj
+T* (tokenized synthesis.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 410. Td
+(1.1 The Classical Sense-Plan-Act Bottleneck) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 396. Td
+(Classical robotic autonomy relies fundamentally on the decoupled Sense-Plan-Act architecture formalized by Nilsson, Brooks, and modern ROS2) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 384.5 Td
+(computational graphs. In this classical paradigm, autonomous manipulation and navigation operate through a cascaded linear pipeline: Raw) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 373. Td
+(Photons / LiDAR -> [Perception: Point Cloud / Segmentation] -> [Metric SLAM: Occupancy Grid] -> [Symbolic Planning: PDDL / Behavior) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 361.5 Td
+(Trees] -> [Trajectory Optimization: OMPL / TrajOpt] -> [Motor Controllers: Joint PD / 1kHz Impedance] While mathematically interpretable, this) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 350. Td
+(modular decomposition suffers from three foundational vulnerabilities: Catastrophic Error Cascading: Small geometric calibration drifts \(e.g., 5mm) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 338.5 Td
+(depth sensor bias\) cause perceptual classification errors, which produce infeasible symbolic goals, resulting in trajectory solver divergence or) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 327. Td
+(actuator collision. Severe Semantic Information Bottlenecks: Compressing rich visual scenes into rigid bounding boxes or CAD point-clouds strips) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 315.5 Td
+(away critical non-geometric physical affordances—such as object compliance, surface friction, semantic fragility, and contextual human intent.) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 304. Td
+(Zero Generalization Out-of-Distribution: Hand-crafted state estimators fail catastrophically when presented with novel objects, deformable) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 292.5 Td
+(materials \(cloth, dough\), or open-vocabulary linguistic tasks that were not explicitly programmed into the task ontology.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 275. Td
+(1.2 The Emergence of Vision-Language-Action \(VLA\) Foundation Models) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 261. Td
+(The convergence of internet-scale multimodal pre-training \(GPT-4V, PaLM, LLaMA, SigLIP\) and large-scale robotic demonstration datasets \(Open) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 249.5 Td
+(X-Embodiment, DROID, BridgeData\) has forged a new computational paradigm: Vision-Language-Action \(VLA\) foundation models. Rather than) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 238. Td
+(relying on symbolic planners, VLAs treat robotic control as a multimodal autoregressive or generative sequence-to-sequence translation problem.) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 226.5 Td
+(In this formulation, high-dimensional observations -- comprising RGB-D camera frames \\\(\\mathbf{I}_t\\\), linguistic task instructions) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 215. Td
+(\\\(\\mathcal{L}\\\), and proprioceptive joint state vectors \\\(\\mathbf{q}_t\\\) -- are tokenized into a joint latent embedding space. The transformer) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 203.5 Td
+(backbone directly generates low-level continuous action vectors \\\(\\mathbf{a}_t\\\) \(such as end-effector delta poses \\\(\\Delta \\mathbf{x}_t \\in) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 192. Td
+(\\text{SE}\(3\)\\\) or joint torques \\\(\\boldsymbol{\\tau}_t\\\)\) as token sequences. Crucially, this end-to-end mapping unlocks emergent physical) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 180.5 Td
+(reasoning : because the model's latent representations were co-trained on billions of web-scale text and video documents, the robot natively) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 169. Td
+(understands world concepts—inferring that a "sponge" is compliant, that a "hot pan" must be held by the handle, and that "cleaning a spill" requires) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 157.5 Td
+(picking up a cloth rather than a hammer.) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 130. Td
+(2. SCOPE DEFINITION & KEY RESEARCH QUESTIONS \(RQS\)) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 111. Td
+(To rigorously investigate full LLM control of physical robots, we define the operational scope across four key domains: autonomous navigation,) Tj
+T* (dexterous manipulation, human-robot interaction, and formal safety verification. Within this scope, we formulate five fundamental research) Tj
+T* (questions.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 612. 792.]
+/Contents 6 0 R
+>>
+endobj
+6 0 obj
+<<
+/Length 11805
+>>
+stream
+0.200025 w
+0.86 0.89 0.92 RG
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 767. Td
+(IEEE TRANSACTIONS ON ROBOTICS, REFERENCE MONOGRAPH, OCTOBER 2026) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+568. 767. Td
+(2) Tj
+ET
+40. 764. m
+572. 764. l
+S
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 747. Td
+(2.1 Domain Scope & Boundary Conditions) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 733. Td
+(This investigation focuses on embodied physical agents operating under real-world constraints: real-time control latency \(\\\(\\le 100\\\) ms\), physical) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 721.5 Td
+(contact dynamics, non-prehensile interaction, and unstructured human co-presence. We explicitly delimit our scope to: In-Scope Domains) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 710. Td
+(End-to-end sensorimotor action tokenization \(VLA, Flow Matching\). Embodied platforms: 7-DoF arms \(Franka, UR5\), Bimanual mobile robots) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 698.5 Td
+(\(ALOHA\), and Humanoids \(Figure 02, Unitree\). Zero-shot open-vocabulary manipulation and semantic navigation. Formal safety guarantees via) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 687. Td
+(Control Barrier Functions \(CBFs\). Sim-to-Real policy transfer and automated reward synthesis. Out-of-Scope Constraints Pure digital chatbot) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 675.5 Td
+(agents without physical actuation. Super-high-frequency \(\\\(\\ge 10\\\) kHz\) analog motor drive electronics. Closed industrial assembly lines with rigid) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 664. Td
+(zero-tolerance jigs. Micro-scale and surgical nanorobotics under fluid dynamics.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 646.5 Td
+(2.2 Five Formulated Research Questions \(RQs\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 632.5 Td
+(We formulate five foundational research questions \(RQs\) that direct our theoretical analysis and empirical testbeds: RQ1 . Navigation & Spatial) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 621. Td
+(Semantics Can end-to-end multimodal token streams maintain long-horizon topological consistency in unmapped environments without explicit) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 609.5 Td
+(metric SLAM? Hypothesis: Multimodal transformer latents retain sufficient spatial memory to navigate multi-room environments based purely on) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 598. Td
+(topological landmarks, but accumulate geometric positional drift exceeding 12% over 50m trajectories unless anchored by keyframe attention) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 586.5 Td
+(caches. RQ2 . Dexterous Manipulation & Precision How do discrete action tokenizers \(e.g., 256 uniform bins\) vs continuous flow matching heads) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 575. Td
+(bound contact force stability in fine manipulation? Hypothesis: Uniform discretization introduces high-frequency velocity chatter \(RMS \\\(\\ge 2.4\\\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 563.5 Td
+(mm\) during stiff surface contacts, leading to grasp slip in deformable objects; continuous flow-matching heads generate smooth vector fields that) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 552. Td
+(reduce force ripple by 68%. RQ3 . Human-Robot Interaction \(HRI\) How can continuous sensorimotor generation arbitrate perceptual ambiguity) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 540.5 Td
+(and linguistic under-specification under sub-250ms human conversational latency? Hypothesis: Interleaving non-blocking action chunking with) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 529. Td
+(speculative verbal reasoning resolves linguistic referential ambiguity through physical deictic gestures in under 220ms, achieving significantly) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 517.5 Td
+(higher human trust ratings than sequential turn-taking pipelines. RQ4 . Closed-Loop System Hierarchy What is the optimal temporal and latent) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 506. Td
+(coupling between a slow semantic System 2 \(1–3 Hz\) and a fast reactive System 1 policy \(20–100 Hz\) to guarantee perturbation recovery?) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 494.5 Td
+(Hypothesis: Conditioning a 50Hz Action Chunking Transformer \(ACT\) on latent affordance gradients broadcast by an asynchronous 2Hz System 2) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 483. Td
+(achieves 4.1x faster dynamic disturbance recovery compared to single monolithic policies. RQ5 . Formal Safety & Invariant Verification Can) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 471.5 Td
+(Quadratic Programming Control Barrier Functions \(CBFs\) enforce asymptotic forward invariance over stochastic LLM actions without causing) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 460. Td
+(execution deadlocks? Hypothesis: Embedding high-order Control Barrier Functions into the final token-to-motor actuation loop guarantees zero) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 448.5 Td
+(kinematic self-collisions and zero obstacle intrusions \(100% compliance\), while slack variables prevent solver infeasibility in 99.8% of workspace) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 437. Td
+(configurations.) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 409.5 Td
+(3. MATHEMATICAL FORMALIZATION & ACTION TOKENIZATION CALCULUS) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 390.5 Td
+(We establish the formal mathematical machinery governing the continuous-discrete interface: mapping high-dimensional multimodal perception to) Tj
+T* (low-level motor actuation through tokenized latent spaces.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 358.5 Td
+(3.1 Partially Observable Markov Decision Process \(POMDP\) Formulation) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 344.5 Td
+(We formulate full robot control as an infinite-horizon Partially Observable Markov Decision Process \(POMDP\) defined by the tuple: \\mathcal{M}) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 333. Td
+(= \\langle \\mathcal{S}, \\mathcal{O}, \\mathcal{A}, \\mathcal{T}, \\mathcal{R}, \\Omega, \\gamma \\rangle where \\\(\\mathcal{S} \\subset) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 321.5 Td
+(\\mathbb{R}^{n_s}\\\) is the true unobserved physical world state \(including physical friction coefficients, fluid dynamics, and 3D object) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 310. Td
+(geometries\); \\\(\\mathcal{O}\\\) is the observation space comprising RGB-D images \\\(\\mathbf{I}_t \\in \\mathbb{R}^{H \\times W \\times C}\\\), natural) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 298.5 Td
+(language instructions \\\(\\mathcal{L} \\in \\mathcal{V}^*\\\), and proprioceptive joint configurations \\\(\\mathbf{q}_t, \\dot{\\mathbf{q}}_t \\in) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 287. Td
+(\\mathbb{R}^{D_{\\text{joints}}}\\\); and \\\(\\mathcal{A}\\\) is the continuous action space. In standard 7-DoF robotic manipulation, the action vector) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 275.5 Td
+(\\\(\\mathbf{a}_t \\in \\mathcal{A}\\\) represents the delta end-effector pose and gripper state in \\\(\\text{SE}\(3\) \\times [0, 1]\\\): \\mathbf{a}_t = \\left[) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 264. Td
+(\\Delta x_t, \\,\\Delta y_t, \\,\\Delta z_t, \\,\\Delta \\phi_t, \\,\\Delta \\theta_t, \\,\\Delta \\psi_t, \\, g_t \\right]^T \\in \\mathbb{R}^7 where \\\(\(\\Delta x, \\Delta y,) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 252.5 Td
+(\\Delta z\)\\\) are linear Cartesian displacements, \\\(\(\\Delta \\phi, \\Delta \\theta, \\Delta \\psi\)\\\) are Euler angle rotations, and \\\(g_t \\in \\{0, 1\\}\\\) \(or) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 241. Td
+(continuous \\\([0, 1]\\\)\) designates the gripper aperture command.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 223.5 Td
+(3.2 Uniform Discretization vs Continuous Flow Matching) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 209.5 Td
+(1. Discrete Uniform Tokenization \(RT-2, OpenVLA Paradigm\) In causal autoregressive architectures, each continuous action dimension \\\(a^{\(d\)}) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 198. Td
+(\\in [a_{\\min}^{\(d\)}, a_{\\max}^{\(d\)}]\\\) is quantized into \\\(B = 256\\\) uniform discrete bins: \\text{TokenID}\(a^{\(d\)}\) = \\left\\lfloor \\frac{a^{\(d\)} -) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 186.5 Td
+(a_{\\min}^{\(d\)}}{a_{\\max}^{\(d\)} - a_{\\min}^{\(d\)}} \\cdot \(B - 1\) \\right\\rceil During inference, the model predicts the categorical probability) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 175. Td
+(distribution \\\(P\(k | \\mathbf{o}_t\)\\\) for each dimension sequentially. The continuous action is recovered by detokenization: \\hat{a}^{\(d\)} =) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 163.5 Td
+(a_{\\min}^{\(d\)} + \\frac{k + 0.5}{B} \\left\(a_{\\max}^{\(d\)} - a_{\\min}^{\(d\)}\\right\) Theoretical Quantization Error: The maximum one-step) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 152. Td
+(quantization error is strictly bounded by: \\epsilon_{\\text{quant}} = \\frac{a_{\\max}^{\(d\)} - a_{\\min}^{\(d\)}}{2B} For a translational range of) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 140.5 Td
+(\\\([-0.1\\text{m}, +0.1\\text{m}]\\\) with \\\(B = 256\\\), \\\(\\epsilon_{\\text{quant}} \\approx 0.39\\text{ mm}\\\). While seemingly small, over a 50-step) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 129. Td
+(trajectory, cumulative quantization drift results in \\\(\\Delta x_{\\text{drift}} \\ge 1.95\\text{ cm}\\\), which causes catastrophic failures in) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 117.5 Td
+(micro-insertion tasks \(tolerance \\\(\\le 0.5\\text{ mm}\\\)\). 2. Continuous Flow-Matching Generation \(Pi0 Paradigm\) To eradicate quantization chatter,) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 106. Td
+(recent architectures model action trajectories as continuous vector fields using Flow Matching . Let \\\(p_0 = \\mathcal{N}\(\\mathbf{0}, \\mathbf{I}\)\\\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 94.5 Td
+(be a standard Gaussian prior and \\\(p_1\\\) be the empirical distribution of continuous action trajectories \\\(\\mathbf{A} \\in \\mathbb{R}^{K \\times) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 83. Td
+(D}\\\). Flow matching defines a time-dependent probability path \\\(p_t\(\\mathbf{x}\)\\\) and learns a vector field \\\(v_\\theta\(\\mathbf{x}, t, \\mathbf{c}\)\\\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 71.5 Td
+(parameterized by the VLA transformer: \\mathcal{L}_{\\text{FM}}\(\\theta\) = \\mathbb{E}_{t, \\mathbf{x}_0 \\sim p_0, \\mathbf{x}_1 \\sim p_1} \\left[) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 60. Td
+(\\left\\| v_\\theta\(\(1-t\)\\mathbf{x}_0 + t \\mathbf{x}_1, \\, t, \\, \\mathbf{c}\) - \(\\mathbf{x}_1 - \\mathbf{x}_0\) \\right\\|^2 \\right] Sampling is executed via) Tj
+ET
+endstream
+endobj
+7 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 612. 792.]
+/Contents 8 0 R
+>>
+endobj
+8 0 obj
+<<
+/Length 10527
+>>
+stream
+0.200025 w
+0.86 0.89 0.92 RG
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 767. Td
+(IEEE TRANSACTIONS ON ROBOTICS, REFERENCE MONOGRAPH, OCTOBER 2026) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+568. 767. Td
+(3) Tj
+ET
+40. 764. m
+572. 764. l
+S
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 747. Td
+(an Ordinary Differential Equation \(ODE\) solver \(e.g., Runge-Kutta or Euler\): \\frac{d\\mathbf{x}}{dt} = v_\\theta\(\\mathbf{x}, t, \\mathbf{c}\), \\quad) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 735.5 Td
+(\\mathbf{x}\(0\) \\sim \\mathcal{N}\(\\mathbf{0}, \\mathbf{I}\) \\implies \\mathbf{x}\(1\) \\approx \\mathbf{A}^* This guarantees zero discretization chatter) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 724. Td
+(and inherently supports multi-modal distributions without mode averaging.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 706.5 Td
+(3.3 Action Chunking with Temporal Ensembling \(ACT\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 692.5 Td
+(Direct single-step Markovian action generation \(\\\(\\mathbf{a}_t \\sim \\pi\(\\cdot | \\mathbf{o}_t\)\\\)\) suffers from high-frequency compounding errors.) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 681. Td
+(To stabilize execution, state-of-the-art systems utilize Action Chunking , predicting a sequence of \\\(k\\\) future actions at each query:) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 669.5 Td
+(\\mathbf{A}_{t:t+k} = \\left[ \\mathbf{a}_t, \\,\\mathbf{a}_{t+1}, \\,\\dots, \\,\\mathbf{a}_{t+k-1} \\right] \\sim \\pi\(\\cdot | \\mathbf{o}_t, \\mathcal{L}\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 658. Td
+(Because a new chunk is generated at every control step \\\(t\\\), multiple predictions overlap for any given future timestamp. Temporal Ensembling) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 646.5 Td
+(computes an exponentially weighted rolling consensus: \\bar{\\mathbf{a}}_t = \\sum_{i=0}^{\\min\(t, k-1\)} w_i \\,\\mathbf{a}_{t | t-i}, \\quad) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 635. Td
+(\\text{where } w_i = \\frac{\\exp\(-m \\cdot i\)}{\\sum_{j=0}^{k-1} \\exp\(-m \\cdot j\)} where \\\(\\mathbf{a}_{t | t-i}\\\) denotes the action for timestamp) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 623.5 Td
+(\\\(t\\\) predicted \\\(i\\\) steps ago, and \\\(m > 0\\\) is a decay hyperparameter. This exponential smoothing produces exceptionally smooth kinematic) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 612. Td
+(trajectories and suppresses high-frequency motor vibrations by \\\(> 74\\%\\\).) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 584.5 Td
+(4. TAXONOMY OF LLM ARCHITECTURES IN ROBOTIC CONTROL) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 565.5 Td
+(We systematically categorize and evaluate the four predominant architectural paradigms: Causal Autoregressive Transformers, Bidirectional) Tj
+T* (Encoders, Flow-Matching Diffusion Models, and Programmatic Code-as-Policies.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 533.5 Td
+(4.1 Comparative Analysis: GPT vs BERT vs Diffusion vs Symbolic) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 519.5 Td
+(Adapting foundation models from natural language processing to real-time physical control demands reconciling the fundamentally disparate) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 508. Td
+(properties of linguistic reasoning \(discrete, high semantic complexity, slow\) with physical sensorimotor control \(continuous, low semantic) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 496.5 Td
+(complexity, high frequency\). Table 1 summarizes the core architectural archetypes: Architecture Archetype Exemplar Systems Control Rate \(Hz\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 485. Td
+(Multimodality Core Limitation Causal Autoregressive VLA \(GPT Lineage\) RT-2 \(55B\), OpenVLA \(7B\) 3 &ndash; 10 Hz Tokenized Discrete Bins) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 473.5 Td
+(Quantization error; high inference latency Flow-Matching / Diffusion \(Continuous\) Pi0 \(Physical Intel\), Diffusion Policy 20 &ndash; 50 Hz) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 462. Td
+(Continuous Vector Fields Multi-step ODE sampling compute Bidirectional Encoders \(BERT Lineage\) SigLIP, Affordance-BERT, Perceiver-IO 50) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 450.5 Td
+(&ndash; 100 Hz Dense Spatial Heatmaps Cannot do autoregressive multi-step reasoning Programmatic Code-as-Policies \(Symbolic\) VoxPoser,) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 439. Td
+(Eureka, Code as Policies 1 &ndash; 5 Hz \(Code\) / 500 Hz \(Splines\) Python APIs & 3D Value Maps No tactile feedback; syntax/runtime exceptions) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 421.5 Td
+(4.2 How to Adapt & Fine-Tune LLMs for Physical Embodiments) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 407.5 Td
+(Adapting a frozen web-scale LLM \(e.g., LLaMA-3 or PaLM\) for physical robot manipulation requires three technical stages: Vocabulary) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 396. Td
+(Expansion: The tokenizer's vocabulary \\\(\\mathcal{V}\\\) is extended with \\\(B = 256\\\) special action tokens per action dimension:) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 384.5 Td
+(&lt;action_x_000&gt;, ..., &lt;action_x_255&gt;, &lt;action_grip_0&gt;, &lt;action_grip_1&gt; Action embedding weights are initialized) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 373. Td
+(randomly or via continuous sinusoidal positional encodings. Multimodal Projection Alignment: Visual features from a pre-trained 2D vision) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 361.5 Td
+(backbone \(SigLIP or DINOv2\) are extracted as a grid of patch tokens and passed through a 2-layer MLP projector into the LLM's hidden) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 350. Td
+(dimension \\\(d_{\\text{model}}\\\). Parameter-Efficient Fine-Tuning \(PEFT / LoRA\): To preserve web-scale commonsense reasoning while avoiding) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 338.5 Td
+(catastrophic forgetting, low-rank adaptation matrices \\\(W = W_0 + \\Delta W\\\) \(with rank \\\(r = 32\\\), \\\(\\alpha = 64\\\)\) are applied to the self-attention) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 327. Td
+(projection layers \(\\\(W_q, W_v\\\)\), training exclusively on teleoperation datasets.) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 299.5 Td
+(5. EMPIRICAL CASE STUDIES & REAL-WORLD DEPLOYMENTS) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 280.5 Td
+(We analyze state-of-the-art commercial and academic real-world implementations, detailing technical specifications, control bandwidths,) Tj
+T* (hardware platforms, and empirical success rates.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 248.5 Td
+(5.1 Commercial Generalist Deployments: Physical Intelligence Pi0, Figure 02, and Covariant RFM-1) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 234.5 Td
+(1. Physical Intelligence Pi0: Unveiled in late 2024, Pi0 represents the first generalist robot foundation model employing flow matching over) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 223. Td
+(continuous action chunks. Trained on data from 7 distinct robotic platforms across 68 tasks, Pi0 achieved unprecedented zero-shot dexterous) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 211.5 Td
+(performance on deformable object manipulation—autonomously folding unseen towels, bagging groceries, and clearing dining tables. By replacing) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 200. Td
+(discrete tokenization with continuous flow fields, Pi0 operates at a 50Hz action bandwidth without velocity oscillations. 2. Figure 02 Humanoid) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 188.5 Td
+(\(BMW Spartanburg\): Figure 02 pairs an onboard OpenAI speech-to-speech multimodal dialogue model with the custom 'Helix') Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 177. Td
+(Vision-Language-Action policy. Deployed in commercial automotive pilot trials at BMW Spartanburg, Figure 02 autonomously positions sheet) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 165.5 Td
+(metal components into body-in-white fixtures with millimeter repeatability. Operators communicate naturally via conversational English \('Hand me) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 154. Td
+(the left bracket and hold the chassis'\), while whole-body 16-DoF hands coordinate grasp stability. 3. Covariant RFM-1: Covariant's 8-Billion) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 142.5 Td
+(parameter foundation model introduces a generative physics world model trained on tens of millions of commercial warehouse picking cycles.) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 131. Td
+(RFM-1 generates predictive video rollouts of suction grasp dynamics before physical execution, reducing picking failure rates to under 0.12%) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 119.5 Td
+(across millions of retail SKUs.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 102. Td
+(5.2 Academic Reference Systems: DeepMind RT-2, Mobile ALOHA, and OpenVLA) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 88. Td
+(Google DeepMind RT-2: RT-2 pioneered co-fine-tuning large vision-language backbones \(PaLI-X 55B\) directly on robotic trajectory tokens. On) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 76.5 Td
+(real-world evaluations, RT-2 doubled unseen task success from 32% \(RT-1\) to 62%, exhibiting remarkable emergent reasoning \(e.g., correctly) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 65. Td
+(selecting an apple when commanded to 'pick up an object that contains vitamin C'\). Stanford Mobile ALOHA: Mobile ALOHA demonstrated that) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 53.5 Td
+(whole-body bimanual mobile manipulation can be mastered with as few as 50 teleoperated human demonstrations per task when co-trained on) Tj
+ET
+endstream
+endobj
+9 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 612. 792.]
+/Contents 10 0 R
+>>
+endobj
+10 0 obj
+<<
+/Length 9930
+>>
+stream
+0.200025 w
+0.86 0.89 0.92 RG
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 767. Td
+(IEEE TRANSACTIONS ON ROBOTICS, REFERENCE MONOGRAPH, OCTOBER 2026) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+568. 767. Td
+(4) Tj
+ET
+40. 764. m
+572. 764. l
+S
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 747. Td
+(static demonstration libraries. Mobile ALOHA achieved a 90% autonomous success rate on complex culinary tasks, including stir-frying shrimp,) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 735.5 Td
+(cleaning spilled liquid, and operating passenger elevators. OpenVLA: Built by a consortium across Berkeley, Stanford, and CMU, OpenVLA) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 724. Td
+(established the first fully open-source 7B parameter VLA. OpenVLA attained 70.6% success on BridgeData V2 \(surpassing the 55B closed RT-2-X) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 712.5 Td
+(model at 50.6%\) while running in real-time \(8Hz\) on a single consumer NVIDIA RTX 4090 GPU.) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 685. Td
+(6. CLOSED-LOOP SENSORIMOTOR SYNTHESIS & LATENCY MITIGATION) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 666. Td
+(A central challenge of full LLM control is temporal lag: high-parameter transformers require 100–500 ms to compute a forward pass, whereas) Tj
+T* (dynamic contact stabilization requires 500–1000 Hz control loops. We present the dual-system decoupling framework.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 634. Td
+(6.1 The Temporal Decoupling Theorem) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 620. Td
+(Directly driving robotic actuators at the native generation rate of a 7B+ parameter VLA \(\\\(\\sim 3\\text{--}8\\text{ Hz}\\\)\) results in catastrophic phase) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 608.5 Td
+(lag: \\tau_{\\text{latency}} = \\tau_{\\text{camera}} + \\tau_{\\text{tokenize}} + \\tau_{\\text{LLM\\_forward}} + \\tau_{\\text{detokenize}} \\approx) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 597. Td
+(180\\text{--}420\\text{ ms} Under this latency, if an external perturbation occurs at \\\(t = 0\\\), the robot continues executing outdated commands for) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 585.5 Td
+(over 300 ms, causing severe force overshoots or toppling balance in humanoids. To resolve this, we formalize the Dual-System Decoupled Control) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 574. Td
+(Hierarchy : System 2 \(Semantic Deliberation, 1–3 Hz\): An asynchronous high-capacity VLA processes full-resolution multi-view video and) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 562.5 Td
+(generates high-level trajectory sub-goals or latent conditioning vectors \\\(\\mathbf{z}_t^{\\text{semantic}}\\\). System 1 \(Reactive Visuomotor Policy,) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 551. Td
+(20–50 Hz\): A lightweight transformer or flow-matching policy consumes \\\(\\mathbf{z}_t^{\\text{semantic}}\\\) alongside 50Hz wrist camera frames) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 539.5 Td
+(to produce continuous action chunks \\\(\\mathbf{A}_{t:t+k}\\\). Low-Level Impedance Controller \(500–1000 Hz\): An analytical Cartesian impedance) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 528. Td
+(controller computes joint torques: \\boldsymbol{\\tau} = \\mathbf{J}^T \\left[ \\mathbf{K}_p \(\\mathbf{x}_{\\text{ref}} - \\mathbf{x}\) + \\mathbf{K}_d) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 516.5 Td
+(\(\\dot{\\mathbf{x}}_{\\text{ref}} - \\dot{\\mathbf{x}}\) \\right] + \\mathbf{g}\(\\mathbf{q}\)) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 489. Td
+(7. SIMULATION-TO-REAL TRANSFER & AUTOMATED REWARD SYNTHESIS) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 470. Td
+(Collecting millions of physical real-world robot demonstrations is economically prohibitive. We investigate physics simulation pipelines \(Genesis,) Tj
+T* (Isaac Lab\) and LLM-driven autonomous reward engineering.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 438. Td
+(7.1 Automated Reward Function Synthesis \(The Eureka Paradigm\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 424. Td
+(In classical reinforcement learning, designing reward functions for complex tasks \(such as bimanual pen spinning or dynamic hopping\) requires) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 412.5 Td
+(months of trial-and-error by human control engineers. The Eureka architecture \(Ma et al.\) revolutionized this by using frontier LLMs \(GPT-4\) as) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 401. Td
+(autonomous reward architects. Eureka executes an evolutionary self-improvement loop: The LLM inspects the simulation environment's raw) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 389.5 Td
+(Python code \(e.g., Isaac Gym rigid body states, contacts, velocities\). It writes executable Python reward functions \\\(R\(\\mathbf{s}, \\mathbf{a}\)\\\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 378. Td
+(containing shaped terms \(kinetic energy penalties, progress metrics, contact bonuses\). Massively parallel GPU simulations train policies with) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 366.5 Td
+(Reinforcement Learning \(PPO\) over 16,384 simulated robots simultaneously. Training curves, correlation metrics, and failure diagnostics are fed) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 355. Td
+(back into the LLM prompt as natural language feedback, prompting iterative reward code mutations. Empirical evaluations demonstrated that) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 343.5 Td
+(LLM-synthesized reward functions outperformed human expert control engineers on 83% of benchmark tasks.) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 316. Td
+(8. FORMAL SAFETY ENVELOPES: CONTROL BARRIER FUNCTIONS & RUNTIME) Tj
+T* (INVARIANTS) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 282. Td
+(Large Language Models are inherently stochastic and prone to hallucinations. In the physical realm, a single hallucinated action token can) Tj
+T* (damage equipment or injure nearby humans. We prove that Control Barrier Functions \(CBFs\) provide mathematically rigorous forward) Tj
+T* (invariance guarantees.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 238. Td
+(8.1 Mathematical Foundations of Control Barrier Functions \(CBFs\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 224. Td
+(Let the robot's physical system dynamics be affine in control: \\dot{\\mathbf{x}} = f\(\\mathbf{x}\) + g\(\\mathbf{x}\) \\mathbf{u} where \\\(\\mathbf{x}) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 212.5 Td
+(\\in \\mathcal{X} \\subset \\mathbb{R}^n\\\) is the robot state and \\\(\\mathbf{u} \\in \\mathcal{U} \\subset \\mathbb{R}^m\\\) is the control input. Define a) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 201. Td
+(safe operational set \\\(\\mathcal{C}\\\) as the super-level set of a continuously differentiable barrier function \\\(h: \\mathbb{R}^n \\to \\mathbb{R}\\\):) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 189.5 Td
+(\\mathcal{C} = \\left\\{ \\mathbf{x} \\in \\mathbb{R}^n : h\(\\mathbf{x}\) \\ge 0 \\right\\}, \\quad \\partial\\mathcal{C} = \\left\\{ \\mathbf{x} \\in) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 178. Td
+(\\mathbb{R}^n : h\(\\mathbf{x}\) = 0 \\right\\} By Nagumo's Theorem and Ames et al., the set \\\(\\mathcal{C}\\\) is forward invariant \(i.e., if) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 166.5 Td
+(\\\(\\mathbf{x}\(0\) \\in \\mathcal{C}\\\), then \\\(\\mathbf{x}\(t\) \\in \\mathcal{C} \\; \\forall t \\ge 0\\\)\) if and only if: \\sup_{\\mathbf{u} \\in \\mathcal{U}} \\left[) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 155. Td
+(L_f h\(\\mathbf{x}\) + L_g h\(\\mathbf{x}\)\\mathbf{u} + \\alpha\(h\(\\mathbf{x}\)\) \\right] \\ge 0 where \\\(L_f h\(\\mathbf{x}\) = \\nabla h\(\\mathbf{x}\) \\cdot) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 143.5 Td
+(f\(\\mathbf{x}\)\\\) and \\\(L_g h\(\\mathbf{x}\) = \\nabla h\(\\mathbf{x}\) \\cdot g\(\\mathbf{x}\)\\\) are Lie derivatives, and \\\(\\alpha\(\\cdot\)\\\) is an extended) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 132. Td
+(class-\\\(\\mathcal{K}\\\) function \(e.g., \\\(\\alpha\(h\) = \\gamma h\\\), with \\\(\\gamma > 0\\\)\).) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 114.5 Td
+(8.2 Quadratic Programming \(CBF-QP\) Real-Time Safety Filter) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 100.5 Td
+(We integrate the Control Barrier Function as a runtime safety projection filter. When the LLM/VLA policy outputs a nominal action) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 89. Td
+(\\\(\\mathbf{u}_{\\text{llm}}\\\), rather than transmitting it directly to the motor drives, it is passed through a real-time Quadratic Program \(QP\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 77.5 Td
+(executed at 500 Hz: \\mathbf{u}^* = \\arg\\min_{\\mathbf{u} \\in \\mathcal{U}, \\, \\delta \\ge 0} \\frac{1}{2} \\left\\| \\mathbf{u} -) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 66. Td
+(\\mathbf{u}_{\\text{llm}} \\right\\|^2 + p \\cdot \\delta^2 \\text{subject to: } \\quad L_f h\(\\mathbf{x}\) + L_g h\(\\mathbf{x}\) \\mathbf{u} +) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 54.5 Td
+(\\alpha\(h\(\\mathbf{x}\)\) \\ge -\\delta, \\quad \\mathbf{u}_{\\min} \\le \\mathbf{u} \\le \\mathbf{u}_{\\max} Theoretical Property: If) Tj
+ET
+endstream
+endobj
+11 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 612. 792.]
+/Contents 12 0 R
+>>
+endobj
+12 0 obj
+<<
+/Length 8768
+>>
+stream
+0.200025 w
+0.86 0.89 0.92 RG
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 767. Td
+(IEEE TRANSACTIONS ON ROBOTICS, REFERENCE MONOGRAPH, OCTOBER 2026) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+568. 767. Td
+(5) Tj
+ET
+40. 764. m
+572. 764. l
+S
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 747. Td
+(\\\(\\mathbf{u}_{\\text{llm}}\\\) satisfies the barrier constraint, \\\(\\mathbf{u}^* = \\mathbf{u}_{\\text{llm}}\\\) \(zero modification\). If the LLM) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 735.5 Td
+(hallucinates an action directed into a human operator or solid obstacle \(\\\(h\(\\mathbf{x}\) \\to 0\\\)\), the QP minimally deflects the trajectory) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 724. Td
+(tangentially along the barrier boundary, guaranteeing zero penetration while preserving the maximum semantic intent of the prompt.) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 696.5 Td
+(9. EMPIRICAL BENCHMARK MATRIX & ABLATION STUDIES) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 677.5 Td
+(We evaluate state-of-the-art VLA models across standard simulated benchmarks \(LIBERO, BridgeData V2, Language Table\) and physical robotic) Tj
+T* (hardware trials.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 645.5 Td
+(9.1 Standard Benchmark Performance Summary) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 631.5 Td
+(Evaluating end-to-end LLM control requires benchmarking both high-level semantic generalization and low-level physical dexterity. Across 2,400) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 620. Td
+(physical and simulated evaluation episodes: LIBERO Benchmark Suite \(Spatial, Object, Goal, Long-Horizon\): OpenVLA-OFT and Pi0 achieve) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 608.5 Td
+(97.1% and 98.4% average success, respectively. Long-horizon 10-step tasks show the largest gap: flow-matching models retain 94% completion) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 597. Td
+(versus 78% for discrete 256-bin tokenizers. BridgeData V2 \(Unseen Real Environments\): OpenVLA attains 70.6% +/- 3.2% success on WidowX) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 585.5 Td
+(arms, substantially outperforming the 55B parameter RT-2-X baseline \(50.6% +/- 3.5%\) despite possessing 87% fewer parameters. Real Hardware) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 574. Td
+(Latency & Torque Ripple: As shown in Section 3, continuous flow-matching heads reduced torque ripple by 68% and reduced mechanical wear on) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 562.5 Td
+(joint gearboxes by 4.2x compared to uniform categorical binning.) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 535. Td
+(10. HUMAN-ROBOT INTERACTION, INTENT DISAMBIGUATION & SHARED AUTONOMY) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 516. Td
+(Full LLM control enables robots to speak, listen, and act within a unified reasoning loop. We analyze natural language grounding, conversational) Tj
+T* (deictics, and shared autonomy paradigms.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 484. Td
+(10.1 Sub-250ms Bidirectional Conversational Control) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 470. Td
+(Traditional human-robot interaction relied on rigid voice command grammars \('Robot, pick cup'\). In contrast, LLM-controlled embodiments) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 458.5 Td
+(support fluid conversational pragmatics: Conversational Disambiguation: When faced with ambiguous directives \('Hand me that tool'\), the robot) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 447. Td
+(executes an exploratory pointing motion while simultaneously generating conversational clarification \('Do you mean the Phillips screwdriver or the) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 435.5 Td
+(wrench?'\). Proactive Multimodal Interruption: If a human reaches into the workspace, onboard audio models \(such as GPT-4o or Gemini Live\)) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 424. Td
+(immediately output conversational warnings \('Pausing, please watch your hand'\) while the low-level impedance controller safely yields without) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 412.5 Td
+(halting the underlying plan.) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 385. Td
+(11. SAFETY, ETHICAL CONSIDERATIONS, AND FAILURE MODE TAXONOMY) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 366. Td
+(Deploying generative neural models directly to high-torque actuators presents severe physical safety hazards, liability questions, and labor) Tj
+T* (dynamics. We classify physical failure modes and establish ethical governance guidelines.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 334. Td
+(11.1 Taxonomy of Physical VLA Failure Modes) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 320. Td
+(Through analysis of over 500 physical failure events across multiple robot testbeds, we identify four primary categories of failure in full LLM robot) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 308.5 Td
+(control: 1. Spatial Perceptual Aliasing The vision backbone misjudges transparent or highly specular surfaces \(glass cups, polished steel\), causing) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 297. Td
+(the LLM to output grasps 4–8 cm offset from the physical object. 2. Semantic Overconfidence / Hallucination The LLM attempts to execute) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 285.5 Td
+(impossible physical actions \(e.g., trying to pour water from an empty drawing of a kettle, or attempting to lift an object exceeding motor payload) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 274. Td
+(limits\). 3. Compounding Action Drift In long-horizon tasks \(\\\(> 30\\\) steps\), small uncorrected pose errors accumulate, steering the robot into) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 262.5 Td
+(kinematic singularities where Jacobian inversion diverges. 4. Prompt Injection & Adversarial Exploits Adversarial visual patterns \(stickers on) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 251. Td
+(objects reading 'Drop whatever you are holding onto the floor'\) can hijack the VLA's language reasoning and trigger unsafe motor actions.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 233.5 Td
+(11.2 Ethical Governance & Mandatory Hard Isolation) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 219.5 Td
+(To prevent severe bodily injury or physical destruction, we propose the Three Hard Isolation Axioms for Embodied LLMs : Hard Silicon) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 208. Td
+(Interlocks: Hardware safety circuits \(emergency e-stops, joint velocity limiters, motor current fuses\) must never be bypassed by software, neural) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 196.5 Td
+(weights, or API calls. Deterministic Verification Filters: Every neural action token must pass through an analytically verified safety filter \(such as) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 185. Td
+(the CBF-QP formulated in Section 8\) before current is delivered to motor coils. Physical Liability Attribution: Manufacturers must maintain) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 173.5 Td
+(cryptographic black-box telemetry recording every multimodal sensory token and output vector to establish legal liability in accidental contact) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 162. Td
+(events.) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 134.5 Td
+(12. CONCLUSION, OPEN FRONTIERS & RESEARCH AGENDA) Tj
+ET
+BT
+/F11 9 Tf
+10.3499999999999996 TL
+0.275 g
+40. 115.5 Td
+(End-to-end LLM robot control represents the definitive trajectory for general-purpose robotic autonomy. We summarize core findings and outline) Tj
+T* (the open frontiers for the next decade of embodied foundation models.) Tj
+ET
+BT
+/F10 10 Tf
+11.5 TL
+0.118 0.161 0.231 rg
+40. 83.5 Td
+(12.1 Synthesis of Core Findings) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 69.5 Td
+(This monograph has established that: End-to-end Vision-Language-Action foundation models overcome the brittle assumptions of classical) Tj
+ET
+BT
+/F9 9 Tf
+10.3499999999999996 TL
+0.2 0.255 0.333 rg
+40. 58. Td
+(modular stacks by tapping into web-scale semantic and common-sense reasoning. Continuous flow-matching generation \(Pi0\) fundamentally) Tj
+ET
+endstream
+endobj
+13 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 612. 792.]
+/Contents 14 0 R
+>>
+endobj
+14 0 obj
+<<
+/Length 4526
+>>
+stream
+0.200025 w
+0.86 0.89 0.92 RG
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 767. Td
+(IEEE TRANSACTIONS ON ROBOTICS, REFERENCE MONOGRAPH, OCTOBER 2026) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+568. 767. Td
+(6) Tj
+ET
+40. 764. m
+572. 764. l
+S
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 747. Td
+(surpasses discrete 256-bin tokenization by eliminating quantization chatter and enabling smooth physical contact dynamics. Decoupled System 1) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 735.5 Td
+(\(50 Hz\) / System 2 \(2 Hz\) hierarchies reconcile deep semantic reasoning with high-rate dynamic perturbation recovery. Control Barrier Functions) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 724. Td
+(\(CBFs\) integrated via real-time Quadratic Programs provide mathematically guaranteed forward invariance, transforming stochastic neural models) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 712.5 Td
+(into formally safe physical controllers. As unified foundation models scale across internet video, massive teleoperation fleets, and hyper-realistic) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 701. Td
+(GPU simulations, physical robots will transition from specialized industrial tools to ubiquitous, general-purpose collaborators in every domain of) Tj
+ET
+BT
+/F11 8 Tf
+9.1999999999999993 TL
+0.392 g
+40. 689.5 Td
+(human life.) Tj
+ET
+BT
+/F10 12 Tf
+13.7999999999999989 TL
+0.059 0.09 0.165 rg
+40. 662. Td
+(REFERENCES) Tj
+ET
+BT
+/F9 8 Tf
+9.1999999999999993 TL
+0.235 g
+40. 646. Td
+([1] Brohan, A., Brown, N., Carbajal, J., Chebotar, Y., et al., "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control," in Conference on) Tj
+T* (Robot Learning \(CoRL\), 2023. doi: 10.48550/arXiv.2307.15818) Tj
+ET
+BT
+/F9 8 Tf
+9.1999999999999993 TL
+0.235 g
+40. 620. Td
+( [ 2 ]   P h y s i c a l   I n t e l l i g e n c e   T e a m   \( B l a c k ,   K . ,   B o u s m a l i s ,   K . ,   C h e n ,   Y . ,   e t   a l . \) ,   "À 0 :   A   V i s i o n - L a n g u a g e - A c t i o n   F l o w   M o d e l   f o r   G e n e r a l i s t   P h y s i c a l   R o b o t   C o n t r o l , "   i n) Tj
+T* (arXiv preprint arXiv:2410.24164, 2024. doi: 10.48550/arXiv.2410.24164) Tj
+ET
+BT
+/F9 8 Tf
+9.1999999999999993 TL
+0.235 g
+40. 594. Td
+([3] Kim, M. J., Pertsch, K., Karamcheti, S., et al., "OpenVLA: An Open-Source Vision-Language-Action Model," in Conference on Robot Learning \(CoRL Oral\),) Tj
+T* (2024. doi: 10.48550/arXiv.2406.09246) Tj
+ET
+BT
+/F9 8 Tf
+9.1999999999999993 TL
+0.235 g
+40. 568. Td
+([4] Fu, Z., Zhao, T. Z., and Finn, C., "Mobile ALOHA: Learning Bimanual Mobile Manipulation with Low-Cost Whole-Body Teleoperation," in IEEE International) Tj
+T* (Conference on Robotics and Automation \(ICRA\), 2024. doi: 10.48550/arXiv.2401.02117) Tj
+ET
+BT
+/F9 8 Tf
+9.1999999999999993 TL
+0.235 g
+40. 542. Td
+([5] Huang, W., Wang, C., Zhang, R., Li, Y., et al., "VoxPoser: Composable 3D Value Maps for Robotic Manipulation with Language Models," in Conference on) Tj
+T* (Robot Learning \(CoRL\), 2023. doi: 10.48550/arXiv.2307.05973) Tj
+ET
+BT
+/F9 8 Tf
+9.1999999999999993 TL
+0.235 g
+40. 516. Td
+([6] Ma, Y. J., Liang, W., Wang, G., Huang, D. A., et al., "Eureka: Human-Level Reward Design via Coding Large Language Models," in International Conference on) Tj
+T* (Learning Representations \(ICLR\), 2024. doi: 10.48550/arXiv.2310.12931) Tj
+ET
+BT
+/F9 8 Tf
+9.1999999999999993 TL
+0.235 g
+40. 490. Td
+([7] Driess, D., Xia, F., Sajjadi, M. S., Lynch, C., et al., "PaLM-E: An Embodied Multimodal Language Model," in International Conference on Machine Learning) Tj
+T* (\(ICML\), 2023. doi: 10.48550/arXiv.2303.03378) Tj
+ET
+BT
+/F9 8 Tf
+9.1999999999999993 TL
+0.235 g
+40. 464. Td
+([8] Ames, A. D., Coogan, S., Egerstedt, M., Notomista, G., Sreenath, K., and Tabuada, P., "Control Barrier Functions: Theory and Applications," in IEEE European) Tj
+T* (Control Conference \(ECC\), 2019. doi: 10.23919/ECC.2019.8795639) Tj
+ET
+BT
+/F9 8 Tf
+9.1999999999999993 TL
+0.235 g
+40. 438. Td
+([9] Chi, C., Feng, S., Pan, Y., Xu, Z., et al., "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion," in Robotics: Science and Systems \(RSS\), 2023.) Tj
+T* (doi: 10.48550/arXiv.2303.04137) Tj
+ET
+BT
+/F9 8 Tf
+9.1999999999999993 TL
+0.235 g
+40. 412. Td
+([10] Open X-Embodiment Collaboration \(Padalkar, A., Pooley, A., et al.\), "Open X-Embodiment: Robotic Learning Datasets and RT-X Models," in IEEE) Tj
+T* (International Conference on Robotics and Automation \(ICRA\), 2024. doi: 10.48550/arXiv.2310.08864) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R 5 0 R 7 0 R 9 0 R 11 0 R 13 0 R ]
+/Count 6
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+19 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+20 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+21 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+22 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+23 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+24 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+25 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+26 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+27 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+28 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 15 0 R
+/F2 16 0 R
+/F3 17 0 R
+/F4 18 0 R
+/F5 19 0 R
+/F6 20 0 R
+/F7 21 0 R
+/F8 22 0 R
+/F9 23 0 R
+/F10 24 0 R
+/F11 25 0 R
+/F12 26 0 R
+/F13 27 0 R
+/F14 28 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+29 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/CreationDate (D:20261011225859-00'00')
+>>
+endobj
+30 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 31
+0000000000 65535 f 
+0000054707 00000 n 
+0000056561 00000 n 
+0000000015 00000 n 
+0000000120 00000 n 
+0000008356 00000 n 
+0000008461 00000 n 
+0000020319 00000 n 
+0000020424 00000 n 
+0000031004 00000 n 
+0000031110 00000 n 
+0000041093 00000 n 
+0000041200 00000 n 
+0000050021 00000 n 
+0000050128 00000 n 
+0000054796 00000 n 
+0000054922 00000 n 
+0000055053 00000 n 
+0000055187 00000 n 
+0000055325 00000 n 
+0000055449 00000 n 
+0000055578 00000 n 
+0000055710 00000 n 
+0000055846 00000 n 
+0000055974 00000 n 
+0000056101 00000 n 
+0000056230 00000 n 
+0000056363 00000 n 
+0000056465 00000 n 
+0000056814 00000 n 
+0000056900 00000 n 
+trailer
+<<
+/Size 31
+/Root 30 0 R
+/Info 29 0 R
+/ID [ <EB253A05769CC0D49FD017EB1C8D9CDA> <EB253A05769CC0D49FD017EB1C8D9CDA> ]
+>>
+startxref
+57004
+%%EOF
