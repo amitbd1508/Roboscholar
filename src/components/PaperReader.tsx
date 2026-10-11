@@ -2,7 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { PAPER_METADATA, PAPER_BIBLIOGRAPHY } from '../data/researchPaperData';
 import { FULL_PAPER_SECTIONS } from '../data/fullPaperText';
 import { MathFormula } from './MathFormula';
-import { BookOpen, Columns, AlignLeft, Printer, Download, Copy, Check, Search, ExternalLink, Bookmark, Hash } from 'lucide-react';
+import { generatePaperPdf } from '../utils/pdfGenerator';
+import { BookOpen, Columns, AlignLeft, Printer, Download, Copy, Check, Search, ExternalLink, Bookmark, Hash, FileDown, CheckCircle2, Loader2 } from 'lucide-react';
 
 export const PaperReader: React.FC = () => {
   const [layoutMode, setLayoutMode] = useState<'single' | 'two-column'>('two-column');
@@ -10,6 +11,23 @@ export const PaperReader: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeSectionId, setActiveSectionId] = useState<string>('sec-1');
   const [copiedBib, setCopiedBib] = useState<boolean>(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
+  const [pdfSuccess, setPdfSuccess] = useState<boolean>(false);
+
+  const handleDownloadPdf = () => {
+    setIsGeneratingPdf(true);
+    setTimeout(() => {
+      try {
+        generatePaperPdf();
+        setPdfSuccess(true);
+        setTimeout(() => setPdfSuccess(false), 4000);
+      } catch (err) {
+        console.error("PDF generation error:", err);
+      } finally {
+        setIsGeneratingPdf(false);
+      }
+    }, 200);
+  };
 
   const handlePrint = () => {
     window.print();
@@ -133,6 +151,21 @@ export const PaperReader: React.FC = () => {
         {/* Right: Export & Citation */}
         <div className="flex items-center gap-2">
           <button
+            onClick={handleDownloadPdf}
+            disabled={isGeneratingPdf}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-xs font-semibold text-white shadow-md transition-all cursor-pointer"
+            title="Download formatted IEEE PDF directly"
+          >
+            {isGeneratingPdf ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : pdfSuccess ? (
+              <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+            ) : (
+              <FileDown className="w-3.5 h-3.5" />
+            )}
+            <span>{isGeneratingPdf ? 'Generating PDF...' : pdfSuccess ? 'Downloaded!' : 'Download PDF'}</span>
+          </button>
+          <button
             onClick={handleCopyBibtex}
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-slate-300 transition-colors"
             title="Copy BibTeX Citation"
@@ -151,10 +184,49 @@ export const PaperReader: React.FC = () => {
           <button
             onClick={handlePrint}
             className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-sm transition-colors"
-            title="Print / Save PDF format"
+            title="Print / Save PDF format via browser"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>Print PDF</span>
+            <span>Print Layout</span>
+          </button>
+        </div>
+      </div>
+
+      {/* PDF Ready Announcement Banner (No-print) */}
+      <div className="no-print p-4 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-slate-900/80 to-indigo-950/60 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+        <div className="flex items-start gap-3">
+          <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 flex-shrink-0">
+            <FileDown className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-sm text-slate-100">
+                Official PDF Publication Ready for Download
+              </h3>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-900/60 border border-emerald-700 text-emerald-300">
+                Letter Format &middot; IEEE T-RO
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 mt-0.5">
+              Includes all 12 chapters, POMDP equations, Control Barrier Function proofs, benchmark matrix, case studies, and complete references.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleDownloadPdf}
+            disabled={isGeneratingPdf}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-950/50 transition-all cursor-pointer"
+          >
+            {isGeneratingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            <span>{isGeneratingPdf ? 'Compiling PDF...' : 'Download PDF Now'}</span>
+          </button>
+          <button
+            onClick={handlePrint}
+            className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
+          >
+            Print Dialog
           </button>
         </div>
       </div>

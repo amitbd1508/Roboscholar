@@ -15,7 +15,9 @@ import {
   Sparkles,
   ExternalLink,
   ShieldCheck,
-  FileText
+  FileText,
+  FileDown,
+  Loader2
 } from 'lucide-react';
 
 import { PaperReader } from './components/PaperReader';
@@ -26,6 +28,7 @@ import { ResearchScopeFormulator } from './components/ResearchScopeFormulator';
 import { GitHubRepoManager } from './components/GitHubRepoManager';
 import { PaperCoPilot } from './components/PaperCoPilot';
 import { PAPER_METADATA } from './data/researchPaperData';
+import { generatePaperPdf } from './utils/pdfGenerator';
 
 type NavigationTab = 
   | 'paper'
@@ -38,6 +41,18 @@ type NavigationTab =
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavigationTab>('paper');
+  const [isPdfLoading, setIsPdfLoading] = useState<boolean>(false);
+
+  const handleGlobalDownloadPdf = () => {
+    setIsPdfLoading(true);
+    setTimeout(() => {
+      try {
+        generatePaperPdf();
+      } finally {
+        setIsPdfLoading(false);
+      }
+    }, 150);
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
@@ -67,6 +82,19 @@ export default function App() {
 
           {/* Quick Action Badges */}
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleGlobalDownloadPdf}
+              disabled={isPdfLoading}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-xs text-white font-semibold shadow-md transition-all cursor-pointer"
+              title="Download publication-quality PDF directly"
+            >
+              {isPdfLoading ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <FileDown className="w-3.5 h-3.5" />
+              )}
+              <span>{isPdfLoading ? 'Compiling PDF...' : 'Download PDF'}</span>
+            </button>
             <button
               onClick={() => setActiveTab('github')}
               className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 font-medium transition-colors"
