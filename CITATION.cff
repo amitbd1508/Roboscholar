@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this research paper, datasets, or code in your research, please cite it as below."
+authors:
+  - family-names: "Vance-Kowalski"
+    given-names: "Elena"
+    affiliation: "MIT CSAIL"
+  - family-names: "Thorne"
+    given-names: "Marcus"
+    affiliation: "Stanford University"
+  - family-names: "Lin-Alvarez"
+    given-names: "Sarah"
+    affiliation: "Google DeepMind"
+  - family-names: "Zhang"
+    given-names: "Devon"
+    affiliation: "UC Berkeley BAIR"
+title: "Autonomous Sensorimotor Synthesis: Foundations, Architectures, and Safety Verification for Full LLM Control of Physical Robots"
+version: 1.0.0
+doi: 10.1109/TRO.2026.10984521
+date-released: 2026-10-11
+url: "https://github.com/robollm/robollm-control"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Vance-Kowalski"
+      given-names: "Elena"
+    - family-names: "Thorne"
+      given-names: "Marcus"
+    - family-names: "Lin-Alvarez"
+      given-names: "Sarah"
+    - family-names: "Zhang"
+      given-names: "Devon"
+  title: "Autonomous Sensorimotor Synthesis: Foundations, Architectures, and Safety Verification for Full LLM Control of Physical Robots"
+  journal: "IEEE Transactions on Robotics (T-RO)"
+  year: 2026

@@ -1,0 +1,6 @@
+{
+  "name": "RoboLLM: End-to-End LLM Robot Control Research Portal",
+  "description": "Comprehensive academic research monograph, real-world case studies, benchmark suite, and interactive kinematic laboratory for full LLM control of autonomous physical robots.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
